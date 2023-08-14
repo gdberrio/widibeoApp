@@ -5,6 +5,7 @@ import os
 
 load_dotenv()
 airbyte_key = os.getenv("airbyte_key")
+testing_workspace_id = os.getenv("testing_workspace_id")
 
 
 class AirbyteService:
@@ -29,5 +30,25 @@ class AirbyteService:
 
         if res is not None:
             self.workspace_id = res.workspace_response.workspace_id
+
+        return res
+
+    def create_psql_source(
+        self, workspace_id: str, name: str, database: str, username: str, password: str
+    ) -> operations.CreateSourceResponse:
+        req = shared.SourceCreateRequest(
+            configuration=shared.SourcePostgres(
+                host="127.0.0.1",
+                port=5432,
+                database=database,
+                username=username,
+                password=password,
+                source_type=shared.SourcePostgresPostgres.POSTGRES,
+            ),
+            name=name,
+            workspace_id=workspace_id,
+        )
+
+        res = self.s.sources.create_source(req)
 
         return res
