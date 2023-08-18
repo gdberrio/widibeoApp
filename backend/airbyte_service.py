@@ -1,3 +1,4 @@
+import dateutil.parser
 import airbyte
 from airbyte.models import operations, shared
 from dotenv import load_dotenv
@@ -80,3 +81,23 @@ def get_google_ads_consent_url(airbyte_auth: AirbyteAuthService, workspace_id: s
         return consent_url
     else:
         return res
+
+
+def create_google_ads_source(
+    airbyte_auth: AirbyteAuthService, workspace_id: str, secret_id: str
+):
+    req = shared.SourceCreateRequest(
+        configuration=shared.SourceGoogleAds(
+            credentials=shared.GoogleAdsCredentials(),
+            customer_id="6955756360",
+            start_date=dateutil.parser.isoparse("2021-01-01T00:00:00Z"),
+            source_type=shared.SourceGoogleAdsGoogleAds.GOOGLE_ADS,
+        ),
+        name="google ads test account",
+        secret_id=secret_id,
+        workspace_id=workspace_id,
+    )
+
+    res = airbyte_auth.s.sources.create_source(req)
+
+    return res

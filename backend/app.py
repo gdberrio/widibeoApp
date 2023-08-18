@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
-from airbyte_service import AirbyteAuthService, get_google_ads_consent_url
+from airbyte_service import (
+    AirbyteAuthService,
+    get_google_ads_consent_url,
+    create_google_ads_source,
+)
 from dotenv import load_dotenv
 import os
 
@@ -27,4 +31,10 @@ async def googleads_oauth():
 
 @app.get("/oauth_callback")
 async def callback(secret_id: str):
-    return {"secret_id": secret_id}
+    airbyte_auth = AirbyteAuthService(airbyte_token=airbyte_key)
+    response = create_google_ads_source(
+        airbyte_auth=airbyte_auth,
+        workspace_id=testing_workspace_id,
+        secret_id=secret_id,
+    )
+    return {"response": response}
