@@ -4,3 +4,4 @@ __pycache__/
 *.env
 .vscode/
 packages.txt
+tests.md
