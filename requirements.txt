@@ -1,5 +1,0 @@
-airbyte-api = "^0.29.0"
-python-dotenv = "^1.0.0"
-ipython = "^8.14.0"
-fastapi[all]
-django

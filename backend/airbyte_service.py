@@ -120,7 +120,7 @@ def create_azure_destination(
             azure_blob_storage_account_name=azure_blob_storage_account_name,
             destination_type=shared.DestinationAzureBlobStorageAzureBlobStorage.AZURE_BLOB_STORAGE,
             format=shared.DestinationAzureBlobStorageFormatCSVCommaSeparatedValues(
-                flattening=shared.DestinationAzureBlobStorageFormatCSVCommaSeparatedValuesNormalizationFlattening.NO_FLATTENING,
+                flattening=shared.DestinationAzureBlobStorageFormatCSVCommaSeparatedValuesNormalizationFlattening.ROOT_LEVEL_FLATTENING,
                 format_type=shared.DestinationAzureBlobStorageFormatCSVCommaSeparatedValuesFormatType.CSV,
             ),
         ),

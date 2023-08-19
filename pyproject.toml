@@ -10,6 +10,9 @@ python = ">=3.11,<3.12"
 airbyte-api = "^0.29.0"
 python-dotenv = "^1.0.0"
 ipython = "^8.14.0"
+fastapi = {extras = ["all"], version = "^0.101.1"}
+adlfs = "^2023.8.0"
+duckdb = "^0.8.1"
 
 
 [build-system]
