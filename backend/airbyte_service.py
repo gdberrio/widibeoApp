@@ -69,7 +69,6 @@ def get_google_ads_consent_url(airbyte_auth: AirbyteAuthService, workspace_id: s
     req = shared.InitiateOauthRequest(
         name=shared.OAuthActorNames.GOOGLE_ADS,
         o_auth_input_configuration=shared.OAuthInputConfiguration(),
-        # redirect_url="https://cloud.airbyte.io/v1/api/oauth/callback",
         redirect_url="https://3626-213-122-179-210.ngrok-free.app/oauth_callback",
         workspace_id=workspace_id,
     )
@@ -77,7 +76,7 @@ def get_google_ads_consent_url(airbyte_auth: AirbyteAuthService, workspace_id: s
     res = airbyte_auth.s.sources.initiate_o_auth(req)
 
     if res.status_code == 200:
-        consent_url = json.loads(res.raw_response.content.decode())["consentUrl"]
+        consent_url = json.loads(res.raw_response.content.decode())["consentUrl"]  # type: ignore
         return consent_url
     else:
         return res
@@ -87,14 +86,17 @@ def create_google_ads_source(
     airbyte_auth: AirbyteAuthService,
     workspace_id: str,
     secret_id: str,
-    customer_id="6659797672",
+    customer_id="6597976726",
+    manager_customer_id="9831493179",
 ):
     req = shared.SourceCreateRequest(
         configuration=shared.SourceGoogleAds(
-            credentials=shared.GoogleAdsCredentials(),
+            credentials=shared.GoogleAdsCredentials(),  # type: ignore
             customer_id=customer_id,
             start_date=dateutil.parser.isoparse("2023-08-18T00:00:00Z"),
             source_type=shared.SourceGoogleAdsGoogleAds.GOOGLE_ADS,
+            login_customer_id=manager_customer_id,
+            conversion_window_days=30,
         ),
         name="google ads test account",
         secret_id=secret_id,
@@ -128,4 +130,17 @@ def create_azure_destination(
 
     res = airbyte_auth.s.destinations.create_destination(req)
 
+    return res
+
+
+def create_connection(
+    airbyte_auth: AirbyteAuthService,
+    source_id: str,
+    destination_id: str,
+):
+    req = shared.ConnectionCreateRequest(
+        source_id=source_id, destination_id=destination_id, name="test destination"
+    )
+
+    res = airbyte_auth.s.connections.create_connection(req)
     return res
