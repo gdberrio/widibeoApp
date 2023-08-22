@@ -1,3 +1,4 @@
+import requests
 import dateutil.parser
 import airbyte
 from airbyte.models import operations, shared
@@ -165,19 +166,37 @@ def create_s3_destination(
     return res
 
 
+# def get_stream_properties(
+#    airbyte_auth: AirbyteAuthService, source_id: str, destination_id: str
+# ) -> operations.GetStreamPropertiesResponse:
+#    # TODO: Fix the return object
+#    req = operations.GetStreamPropertiesRequest(
+#        destination_id=destination_id,
+#        source_id=source_id,
+#        ignore_cache=False,
+#    )
+#
+#    res = airbyte_auth.s.streams.get_stream_properties(req)
+#
+#    return res
+
+
 def get_stream_properties(
-    airbyte_auth: AirbyteAuthService, source_id: str, destination_id: str
-) -> operations.GetStreamPropertiesResponse:
-    # TODO: Fix the return object
-    req = operations.GetStreamPropertiesRequest(
-        destination_id=destination_id,
-        source_id=source_id,
-        ignore_cache=False,
-    )
+    airbyte_auth: AirbyteAuthService,
+    source_id: str,
+    destination_id: str,
+    ignore_cache: str = "false",
+):
+    url = f"https://api.airbyte.com/v1/streams?sourceId={source_id}&destinationId={destination_id}&ignoreCache={ignore_cache}"
 
-    res = airbyte_auth.s.streams.get_stream_properties(req)
+    headers = {
+        "accept": "application/json",
+        "authorization": f"Bearer {airbyte_auth.airbyte_token}",
+    }
 
-    return res
+    response = requests.get(url, headers=headers)
+
+    return response.text
 
 
 def create_connection(
