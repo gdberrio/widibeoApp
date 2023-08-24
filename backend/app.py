@@ -26,11 +26,6 @@ aws_access_secret = os.getenv("aws_access_secret")
 app = FastAPI()
 
 
-@app.get("/")
-async def root():
-    return {"message": "hello world"}
-
-
 @app.get("/googleads_oauth")
 async def googleads_oauth():
     airbyte_auth = AirbyteAuthService(airbyte_token=airbyte_key)
