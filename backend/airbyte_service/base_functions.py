@@ -3,15 +3,7 @@ import json
 import dateutil.parser
 import airbyte
 from airbyte.models import operations, shared
-from dotenv import load_dotenv
-import os
 import json
-
-load_dotenv()
-airbyte_key = os.getenv("airbyte_key")
-testing_workspace_id = os.getenv("testing_workspace_id")
-testing_google_ads_dev_token = os.getenv("google_ads_test_developer_token")
-testing_google_ads_customer_id = os.getenv("google_ads_test_customer_id")
 
 
 class AirbyteAuthService:
@@ -20,7 +12,6 @@ class AirbyteAuthService:
         self.s = airbyte.Airbyte(
             security=shared.Security(bearer_auth=self.airbyte_token)
         )
-        self.workspace_id = None
 
 
 def list_workspaces(
@@ -45,14 +36,16 @@ def create_psql_source(
     airbyte_auth: AirbyteAuthService,
     workspace_id: str,
     name: str,
+    host: str,
+    port: int,
     database: str,
     username: str,
     password: str,
 ) -> operations.CreateSourceResponse:
     req = shared.SourceCreateRequest(
         configuration=shared.SourcePostgres(
-            host="127.0.0.1",
-            port=5432,
+            host=host,
+            port=port,
             database=database,
             username=username,
             password=password,
@@ -69,7 +62,7 @@ def create_psql_source(
 
 def get_google_ads_consent_url(
     airbyte_auth: AirbyteAuthService, workspace_id: str
-) -> str | operations.InitiateOAuthResponse:
+) -> str:
     req = shared.InitiateOauthRequest(
         name=shared.OAuthActorNames.GOOGLE_ADS,
         o_auth_input_configuration=shared.OAuthInputConfiguration(),
@@ -79,11 +72,10 @@ def get_google_ads_consent_url(
 
     res = airbyte_auth.s.sources.initiate_o_auth(req)
 
-    if res.status_code == 200:
-        consent_url = json.loads(res.raw_response.content.decode())["consentUrl"]  # type: ignore
-        return consent_url
-    else:
-        return res
+    if res.status_code != 200:
+        return "error: oauth call failed"
+    consent_url = json.loads(res.raw_response.content.decode())["consentUrl"]  # type: ignore
+    return consent_url
 
 
 def create_google_ads_source(
