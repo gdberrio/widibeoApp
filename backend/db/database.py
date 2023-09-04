@@ -1,8 +1,15 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import os
+from dotenv import load_dotenv
 
-SQLALCHEMY_DATABASE_URL = "sqlite://../sql_app.db"
+load_dotenv()
+
+psql_pwd = os.getenv("psql_pwd")
+
+SQLALCHEMY_DATABASE_URL = f"postgresql://postgres:{psql_pwd}@127.0.0.1:5432/widibeoApp"
+
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,

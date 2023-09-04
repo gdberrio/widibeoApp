@@ -4,6 +4,12 @@ import dateutil.parser
 import airbyte
 from airbyte.models import operations, shared
 import json
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+base_url = os.getenv("base_url")
 
 
 class AirbyteAuthService:
@@ -66,7 +72,7 @@ def get_google_ads_consent_url(
     req = shared.InitiateOauthRequest(
         name=shared.OAuthActorNames.GOOGLE_ADS,
         o_auth_input_configuration=shared.OAuthInputConfiguration(),
-        redirect_url="https://3626-213-122-179-210.ngrok-free.app/oauth_callback",
+        redirect_url=f"{base_url}/oauth_callback",
         workspace_id=workspace_id,
     )
 
@@ -100,31 +106,6 @@ def create_google_ads_source(
     )
 
     res = airbyte_auth.s.sources.create_source(req)
-
-    return res
-
-
-def create_azure_destination(
-    airbyte_auth: AirbyteAuthService,
-    workspace_id: str,
-    azure_blob_storage_account_key: str,
-    azure_blob_storage_account_name: str,
-) -> operations.CreateDestinationResponse:
-    req = shared.DestinationCreateRequest(
-        configuration=shared.DestinationAzureBlobStorage(
-            azure_blob_storage_account_key=azure_blob_storage_account_key,
-            azure_blob_storage_account_name=azure_blob_storage_account_name,
-            destination_type=shared.DestinationAzureBlobStorageAzureBlobStorage.AZURE_BLOB_STORAGE,
-            format=shared.DestinationAzureBlobStorageFormatCSVCommaSeparatedValues(
-                flattening=shared.DestinationAzureBlobStorageFormatCSVCommaSeparatedValuesNormalizationFlattening.ROOT_LEVEL_FLATTENING,
-                format_type=shared.DestinationAzureBlobStorageFormatCSVCommaSeparatedValuesFormatType.CSV,
-            ),
-        ),
-        name="azure test storage",
-        workspace_id=workspace_id,
-    )
-
-    res = airbyte_auth.s.destinations.create_destination(req)
 
     return res
 

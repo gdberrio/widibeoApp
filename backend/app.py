@@ -11,6 +11,9 @@ from airbyte_service.base_functions import (
 from dotenv import load_dotenv
 import os
 
+from backend.db.database import SessionLocal
+from backend.db import models, schemas
+
 load_dotenv()
 airbyte_key = os.getenv("airbyte_key")
 testing_workspace_id = os.getenv("testing_workspace_id")
@@ -20,6 +23,14 @@ aws_access_secret = os.getenv("aws_access_secret")
 destination_id = os.getenv("s3_destination_id")
 
 app = FastAPI()
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 @app.get("/googleads_oauth")
