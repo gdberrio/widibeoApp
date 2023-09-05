@@ -15,7 +15,7 @@ class User(Base):
 class Workspace(Base):
     __tablename__ = "workspaces"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
 
     user = relationship("User", back_populates="workspace")
@@ -26,8 +26,8 @@ class Workspace(Base):
 class Destination(Base):
     __tablename__ = "destinations"
 
-    id = Column(Integer, primary_key=True, index=True)
-    workspace_id = Column(Integer, ForeignKey("workspaces.id"))
+    id = Column(String, primary_key=True, index=True)
+    workspace_id = Column(String, ForeignKey("workspaces.id"))
 
     workspace = relationship("Workspace", back_populates="destinations")
     connections = relationship("Connection", back_populates="destination")
@@ -36,8 +36,8 @@ class Destination(Base):
 class Source(Base):
     __tablename__ = "sources"
 
-    id = Column(Integer, primary_key=True, index=True)
-    workspace_id = Column(Integer, ForeignKey("workspaces.id"))
+    id = Column(String, primary_key=True, index=True)
+    workspace_id = Column(String, ForeignKey("workspaces.id"))
 
     workspace = relationship("Workspace", back_populates="sources")
     connections = relationship("Connection", back_populates="source")
@@ -46,9 +46,9 @@ class Source(Base):
 class Connection(Base):
     __tablename__ = "connections"
 
-    id = Column(Integer, primary_key=True, index=True)
-    source_id = Column(Integer, ForeignKey("sources.id"))
-    destination_id = Column(Integer, ForeignKey("destinations.id"))
+    id = Column(String, primary_key=True, index=True)
+    source_id = Column(String, ForeignKey("sources.id"))
+    destination_id = Column(String, ForeignKey("destinations.id"))
 
     source = relationship("Source", back_populates="connections")
     destination = relationship("Destination", back_populates="connections")
@@ -58,8 +58,8 @@ class Connection(Base):
 class StreamProperty(Base):
     __tablename__ = "stream_properties"
 
-    id = Column(Integer, primary_key=True, index=True)
-    connection_id = Column(Integer, ForeignKey("connections.id"))
+    id = Column(String, primary_key=True, index=True)
+    connection_id = Column(String, ForeignKey("connections.id"))
     key = Column(String, index=True)
     value = Column(String)
 

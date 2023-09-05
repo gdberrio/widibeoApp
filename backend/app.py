@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from airbyte_service.base_functions import (
     AirbyteAuthService,
@@ -11,8 +11,9 @@ from airbyte_service.base_functions import (
 from dotenv import load_dotenv
 import os
 
-from backend.db.database import SessionLocal
-from backend.db import models, schemas
+from sqlalchemy.orm import Session
+from db.database import SessionLocal, engine
+from db import models, schemas, crud
 
 load_dotenv()
 airbyte_key = os.getenv("airbyte_key")
@@ -21,6 +22,8 @@ source_id = os.getenv("gads_test_source_id")
 aws_access_key = os.getenv("aws_access_key")
 aws_access_secret = os.getenv("aws_access_secret")
 destination_id = os.getenv("s3_destination_id")
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -31,6 +34,14 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+@app.post("/workspace/", response_model=schemas.Workspace)
+def create_workspace(workspace: schemas.WorkspaceCreate, db: Session = Depends(get_db)):
+    db_workspace = crud.get_workspace(db, workspace_id=workspace.id)
+    if db_workspace:
+        raise HTTPException(status_code=400, detail="Workspace already registered")
+    return crud.create_workspace(db=db, workspace=workspace)
 
 
 @app.get("/googleads_oauth")

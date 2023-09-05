@@ -9,7 +9,7 @@ import os
 from dotenv import load_dotenv
 
 from db.database import Base
-from db.models import *
+from db.models import User, Workspace, Connection, Source, Destination, StreamProperty
 
 load_dotenv()
 
@@ -57,6 +57,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        compare_type=True,
     )
 
     with context.begin_transaction():

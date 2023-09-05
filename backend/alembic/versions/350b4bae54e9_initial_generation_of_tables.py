@@ -1,8 +1,8 @@
-"""Initial tables
+"""initial generation of tables
 
-Revision ID: b1c498e50400
-Revises: 9e429fa1781a
-Create Date: 2023-09-04 09:19:22.389071
+Revision ID: 350b4bae54e9
+Revises: 
+Create Date: 2023-09-05 07:42:47.085304
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b1c498e50400'
-down_revision: Union[str, None] = '9e429fa1781a'
+revision: str = '350b4bae54e9'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -28,38 +28,38 @@ def upgrade() -> None:
     op.create_index(op.f('ix_users_id'), 'users', ['id'], unique=False)
     op.create_index(op.f('ix_users_name'), 'users', ['name'], unique=True)
     op.create_table('workspaces',
-    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('id', sa.String(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_workspaces_id'), 'workspaces', ['id'], unique=False)
     op.create_table('destinations',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('workspace_id', sa.Integer(), nullable=True),
+    sa.Column('id', sa.String(), nullable=False),
+    sa.Column('workspace_id', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['workspace_id'], ['workspaces.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_destinations_id'), 'destinations', ['id'], unique=False)
     op.create_table('sources',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('workspace_id', sa.Integer(), nullable=True),
+    sa.Column('id', sa.String(), nullable=False),
+    sa.Column('workspace_id', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['workspace_id'], ['workspaces.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_sources_id'), 'sources', ['id'], unique=False)
     op.create_table('connections',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('source_id', sa.Integer(), nullable=True),
-    sa.Column('destination_id', sa.Integer(), nullable=True),
+    sa.Column('id', sa.String(), nullable=False),
+    sa.Column('source_id', sa.String(), nullable=True),
+    sa.Column('destination_id', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['destination_id'], ['destinations.id'], ),
     sa.ForeignKeyConstraint(['source_id'], ['sources.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_connections_id'), 'connections', ['id'], unique=False)
     op.create_table('stream_properties',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('connection_id', sa.Integer(), nullable=True),
+    sa.Column('id', sa.String(), nullable=False),
+    sa.Column('connection_id', sa.String(), nullable=True),
     sa.Column('key', sa.String(), nullable=True),
     sa.Column('value', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['connection_id'], ['connections.id'], ),

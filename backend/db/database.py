@@ -11,10 +11,7 @@ psql_pwd = os.getenv("psql_pwd")
 SQLALCHEMY_DATABASE_URL = f"postgresql://postgres:{psql_pwd}@127.0.0.1:5432/widibeoApp"
 
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},  # only for sqlite
-)
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

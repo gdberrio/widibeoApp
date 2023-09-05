@@ -13,11 +13,12 @@ class User(UserBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class WorkspaceBase(BaseModel):
     user_id: int
+    id: str
 
 
 class WorkspaceCreate(WorkspaceBase):
@@ -25,14 +26,13 @@ class WorkspaceCreate(WorkspaceBase):
 
 
 class Workspace(WorkspaceBase):
-    id: int
-
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class DestinationBase(BaseModel):
     workspace_id: int
+    id: str
 
 
 class DestinationCreate(DestinationBase):
@@ -40,14 +40,13 @@ class DestinationCreate(DestinationBase):
 
 
 class Destination(DestinationBase):
-    id: int
-
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class SourceBase(BaseModel):
     workspace_id: int
+    id: str
 
 
 class SourceCreate(SourceBase):
@@ -55,15 +54,14 @@ class SourceCreate(SourceBase):
 
 
 class Source(SourceBase):
-    id: int
-
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ConnectionBase(BaseModel):
     source_id: int
     destination_id: int
+    id: str
 
 
 class ConnectionCreate(ConnectionBase):
@@ -71,16 +69,15 @@ class ConnectionCreate(ConnectionBase):
 
 
 class Connection(ConnectionBase):
-    id: int
-
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class StreamPropertyBase(BaseModel):
     connection_id: int
     key: str
     value: str
+    id: str
 
 
 class StreamPropertyCreate(StreamPropertyBase):
@@ -88,7 +85,5 @@ class StreamPropertyCreate(StreamPropertyBase):
 
 
 class StreamProperty(StreamPropertyBase):
-    id: int
-
     class Config:
-        orm_mode = True
+        from_attributes = True
