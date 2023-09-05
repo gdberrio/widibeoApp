@@ -82,22 +82,18 @@ async def callback(secret_id: str, db: Session = Depends(get_db)):
     return crud.create_source(db, source)
 
 
-@app.get("/s3_destination", response_model=schemas.Destination)
-async def s3_destination(db: Session = Depends(get_db)):
+@app.post("/s3_destination", response_model=schemas.Destination)
+async def s3_destination(
+    request: schemas.S3DestinationRequest, db: Session = Depends(get_db)
+):
     airbyte_auth = AirbyteAuthService(airbyte_token=airbyte_key)
-    if testing_workspace_id is None:
-        raise HTTPException(status_code=400, detail="No workspace_id")
-    if aws_access_key is None:
-        raise HTTPException(status_code=400, detail="No aws_access_key")
-    if aws_access_secret is None:
-        raise HTTPException(status_code=400, detail="No aws_access_secret")
     response = create_s3_destination(
         airbyte_auth=airbyte_auth,
-        workspace_id=testing_workspace_id,
-        aws_access_key=aws_access_key,
-        aws_access_secret=aws_access_secret,
-        s3_bucket_name="widibeodatalake",
-        s3_bucket_path="airbyte",
+        workspace_id=request.workspace_id,
+        aws_access_key=request.aws_access_key,
+        aws_access_secret=request.aws_access_secret,
+        s3_bucket_name=request.s3_bucket_name,
+        s3_bucket_path=request.s3_bucket_path,
     )
 
     if response is None:
@@ -108,7 +104,7 @@ async def s3_destination(db: Session = Depends(get_db)):
 
     destination_id = response.destination_response.destination_id
     destination = schemas.DestinationCreate(
-        workspace_id=testing_workspace_id, id=destination_id
+        workspace_id=request.workspace_id, id=destination_id
     )
 
     db_destination = crud.get_destination(db, destination_id=destination_id)

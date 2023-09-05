@@ -87,3 +87,11 @@ class StreamPropertyCreate(StreamPropertyBase):
 class StreamProperty(StreamPropertyBase):
     class Config:
         from_attributes = True
+
+
+class S3DestinationRequest(BaseModel):
+    workspace_id: str
+    aws_access_key: str
+    aws_access_secret: str
+    s3_bucket_name: str = "widibeodatalake"  # Default value if you want
+    s3_bucket_path: str = "airbyte"  # Default value if you want
