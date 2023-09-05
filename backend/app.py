@@ -48,37 +48,47 @@ def create_workspace(workspace: schemas.WorkspaceCreate, db: Session = Depends(g
 async def googleads_oauth():
     airbyte_auth = AirbyteAuthService(airbyte_token=airbyte_key)
     if testing_workspace_id is None:
-        return {"response": "No workspace_id"}
+        raise HTTPException(status_code=400, detail="No workspace_id")
     consent_url = get_google_ads_consent_url(
         airbyte_auth=airbyte_auth, workspace_id=testing_workspace_id
     )
     if consent_url is None:
-        return {"response": "No consent URL returned"}
+        raise HTTPException(status_code=400, detail="No consent URL returned")
     return RedirectResponse(consent_url)
 
 
-@app.get("/oauth_callback")
-async def callback(secret_id: str):
+@app.get("/oauth_callback", response_model=schemas.Source)
+async def callback(secret_id: str, db: Session = Depends(get_db)):
     if testing_workspace_id is None:
-        return {"response": "No workspace_id"}
+        raise HTTPException(status_code=400, detail="No workspace_id")
     airbyte_auth = AirbyteAuthService(airbyte_token=airbyte_key)
     response = create_google_ads_source(
         airbyte_auth=airbyte_auth,
         workspace_id=testing_workspace_id,
         secret_id=secret_id,
     )
-    return {"response": response}
+    if response is None:
+        raise HTTPException(status_code=400, detail="response is None")
+
+    source_id = response.source_response.source_id
+
+    source = schemas.SourceCreate(workspace_id=testing_workspace_id, id=source_id)
+    db_source = crud.get_source(db, source_id=source_id)
+
+    if db_source:
+        raise HTTPException(status_code=400, detail="Source already registered")
+    return crud.create_source(db, source)
 
 
-@app.get("/s3_destination")
-async def s3_destination():
+@app.get("/s3_destination", response_model=schemas.Destination)
+async def s3_destination(db: Session = Depends(get_db)):
     airbyte_auth = AirbyteAuthService(airbyte_token=airbyte_key)
     if testing_workspace_id is None:
-        return {"response": "No testing_workspace_id"}
+        raise HTTPException(status_code=400, detail="No workspace_id")
     if aws_access_key is None:
-        return {"response": "No aws_access_key"}
+        raise HTTPException(status_code=400, detail="No aws_access_key")
     if aws_access_secret is None:
-        return {"response": "Non aws_access_secret"}
+        raise HTTPException(status_code=400, detail="No aws_access_secret")
     response = create_s3_destination(
         airbyte_auth=airbyte_auth,
         workspace_id=testing_workspace_id,
@@ -88,7 +98,18 @@ async def s3_destination():
         s3_bucket_path="airbyte",
     )
 
-    return {"response": response}
+    if response is None:
+        raise HTTPException(status_code=400, detail="response is None")
+
+    destination_id = response.destination_response.destination_id
+    destination = schemas.DestinationCreate(
+        workspace_id=testing_workspace_id, id=destination_id
+    )
+
+    db_destination = crud.get_destination(db, destination_id=destination_id)
+    if db_destination:
+        raise HTTPException(status_code=400, detail="Destination already registered")
+    return crud.create_destination(db, destination)
 
 
 @app.get("/create_connection")
