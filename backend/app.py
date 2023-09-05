@@ -69,6 +69,8 @@ async def callback(secret_id: str, db: Session = Depends(get_db)):
     )
     if response is None:
         raise HTTPException(status_code=400, detail="response is None")
+    if response.source_response is None:
+        raise HTTPException(status_code=400, detail="response is None")
 
     source_id = response.source_response.source_id
 
@@ -99,6 +101,9 @@ async def s3_destination(db: Session = Depends(get_db)):
     )
 
     if response is None:
+        raise HTTPException(status_code=400, detail="response is None")
+
+    if response.destination_response is None:
         raise HTTPException(status_code=400, detail="response is None")
 
     destination_id = response.destination_response.destination_id

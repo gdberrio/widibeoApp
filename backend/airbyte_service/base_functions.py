@@ -1,3 +1,4 @@
+from typing import Optional
 import requests
 import json
 import dateutil.parser
@@ -118,7 +119,7 @@ def create_s3_destination(
     s3_bucket_name: str,
     s3_bucket_path: str,
     s3_bucket_region: shared.DestinationS3S3BucketRegion = shared.DestinationS3S3BucketRegion.EU_WEST_2,
-) -> operations.CreateDestinationResponse:
+) -> Optional[operations.CreateDestinationResponse]:
     req = shared.DestinationCreateRequest(
         configuration=shared.DestinationS3(
             destination_type=shared.DestinationS3S3.S3,
@@ -136,8 +137,8 @@ def create_s3_destination(
     )
 
     res = airbyte_auth.s.destinations.create_destination(req)
-
-    return res
+    if res.status_code == 200:
+        return res
 
 
 def get_stream_properties(
