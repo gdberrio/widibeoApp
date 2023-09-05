@@ -12,7 +12,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_user(db: Session, user: schemas.UserCreate):
-    db_user = models.User(user.model_dump())
+    db_user = models.User(**user.model_dump())
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -44,7 +44,7 @@ def get_destination(db: Session, destination_id: str):
 
 
 def create_destination(db: Session, destination: schemas.DestinationCreate):
-    db_destination = models.Destination(destination.model_dump())
+    db_destination = models.Destination(**destination.model_dump())
     db.add(db_destination)
     db.commit()
     db.refresh(db_destination)
@@ -57,7 +57,7 @@ def get_source(db: Session, source_id: str):
 
 
 def create_source(db: Session, source: schemas.SourceCreate):
-    db_source = models.Source(source.model_dump())
+    db_source = models.Source(**source.model_dump())
     db.add(db_source)
     db.commit()
     db.refresh(db_source)
@@ -74,7 +74,7 @@ def get_connection(db: Session, connection_id: str):
 
 
 def create_connection(db: Session, connection: schemas.ConnectionCreate):
-    db_connection = models.Connection(connection.model_dump())
+    db_connection = models.Connection(**connection.model_dump())
     db.add(db_connection)
     db.commit()
     db.refresh(db_connection)
@@ -91,7 +91,7 @@ def get_stream_property(db: Session, stream_property_id: str):
 
 
 def create_stream_property(db: Session, stream_property: schemas.StreamPropertyCreate):
-    db_stream_property = models.StreamProperty(stream_property.model_dump())
+    db_stream_property = models.StreamProperty(**stream_property.model_dump())
     db.add(db_stream_property)
     db.commit()
     db.refresh(db_stream_property)
