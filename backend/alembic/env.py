@@ -19,8 +19,8 @@ config = context.config
 
 # passing interpolation vars to alembic.ini from host env - https://stackoverflow.com/questions/22178339/is-it-possible-to-store-the-alembic-connect-string-outside-of-alembic-ini
 section = config.config_ini_section
-config.set_section_option(section, "DB_USER", os.environ.get("DB_USER"))
-config.set_section_option(section, "DB_PASS", os.environ.get("DB_PASS"))
+config.set_section_option(section, "DB_USER", os.environ.get("DB_USER"))  # type:ignore
+config.set_section_option(section, "DB_PASS", os.environ.get("DB_PASS"))  # type: ignore
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
