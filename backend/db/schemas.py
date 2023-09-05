@@ -31,7 +31,7 @@ class Workspace(WorkspaceBase):
 
 
 class DestinationBase(BaseModel):
-    workspace_id: int
+    workspace_id: str
     id: str
 
 
@@ -45,7 +45,7 @@ class Destination(DestinationBase):
 
 
 class SourceBase(BaseModel):
-    workspace_id: int
+    workspace_id: str
     id: str
 
 
@@ -59,8 +59,8 @@ class Source(SourceBase):
 
 
 class ConnectionBase(BaseModel):
-    source_id: int
-    destination_id: int
+    source_id: str
+    destination_id: str
     id: str
 
 
@@ -74,7 +74,7 @@ class Connection(ConnectionBase):
 
 
 class StreamPropertyBase(BaseModel):
-    connection_id: int
+    connection_id: str
     key: str
     value: str
     id: str

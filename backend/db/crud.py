@@ -20,14 +20,14 @@ def create_user(db: Session, user: schemas.UserCreate):
 
 
 # Workspace CRUD operations
-def get_workspace(db: Session, workspace_id: int):
+def get_workspace(db: Session, workspace_id: str):
     return (
         db.query(models.Workspace).filter(models.Workspace.id == workspace_id).first()
     )
 
 
 def create_workspace(db: Session, workspace: schemas.WorkspaceCreate):
-    db_workspace = models.Workspace(workspace.model_dump())
+    db_workspace = models.Workspace(**workspace.model_dump())
     db.add(db_workspace)
     db.commit()
     db.refresh(db_workspace)
@@ -35,7 +35,7 @@ def create_workspace(db: Session, workspace: schemas.WorkspaceCreate):
 
 
 # Destination CRUD operations
-def get_destination(db: Session, destination_id: int):
+def get_destination(db: Session, destination_id: str):
     return (
         db.query(models.Destination)
         .filter(models.Destination.id == destination_id)
@@ -52,7 +52,7 @@ def create_destination(db: Session, destination: schemas.DestinationCreate):
 
 
 # Source CRUD operations
-def get_source(db: Session, source_id: int):
+def get_source(db: Session, source_id: str):
     return db.query(models.Source).filter(models.Source.id == source_id).first()
 
 
@@ -65,7 +65,7 @@ def create_source(db: Session, source: schemas.SourceCreate):
 
 
 # Connection CRUD operations
-def get_connection(db: Session, connection_id: int):
+def get_connection(db: Session, connection_id: str):
     return (
         db.query(models.Connection)
         .filter(models.Connection.id == connection_id)
@@ -82,7 +82,7 @@ def create_connection(db: Session, connection: schemas.ConnectionCreate):
 
 
 # StreamProperty CRUD operations
-def get_stream_property(db: Session, stream_property_id: int):
+def get_stream_property(db: Session, stream_property_id: str):
     return (
         db.query(models.StreamProperty)
         .filter(models.StreamProperty.id == stream_property_id)
