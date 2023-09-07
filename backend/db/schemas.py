@@ -73,20 +73,77 @@ class Connection(ConnectionBase):
         from_attributes = True
 
 
-class StreamPropertyBase(BaseModel):
+# Base model for Stream
+class StreamBase(BaseModel):
     connection_id: str
-    key: str
-    value: str
-    id: str
+    name: str
+    cursor_field_defined_by_source: bool
 
 
+# Models for Stream creation and read
+class StreamCreate(StreamBase):
+    pass
+
+
+class Stream(StreamBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+# Base model for StreamProperty
+class StreamPropertyBase(BaseModel):
+    field: str
+    stream_id: int
+
+
+# Models for StreamProperty creation and read
 class StreamPropertyCreate(StreamPropertyBase):
     pass
 
 
 class StreamProperty(StreamPropertyBase):
+    id: int
+
     class Config:
-        from_attributes = True
+        orm_mode = True
+
+
+# Base model for StreamSyncMode
+class StreamSyncModeBase(BaseModel):
+    mode: str
+    stream_id: int
+
+
+# Models for StreamSyncMode creation and read
+class StreamSyncModeCreate(StreamSyncModeBase):
+    pass
+
+
+class StreamSyncMode(StreamSyncModeBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+# Base model for StreamPrimaryKey
+class StreamPrimaryKeyBase(BaseModel):
+    field: str
+    stream_id: int
+
+
+# Models for StreamPrimaryKey creation and read
+class StreamPrimaryKeyCreate(StreamPrimaryKeyBase):
+    pass
+
+
+class StreamPrimaryKey(StreamPrimaryKeyBase):
+    id: int
+
+    class Config:
+        orm_mode = True
 
 
 class S3DestinationRequest(BaseModel):

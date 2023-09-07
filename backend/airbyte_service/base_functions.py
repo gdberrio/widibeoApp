@@ -157,7 +157,7 @@ def get_stream_properties(
     response = requests.get(url, headers=headers)
 
     data = json.loads(response.content)
-    return data
+    return data[0]
 
 
 def create_connection(

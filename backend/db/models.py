@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
 from sqlalchemy.orm import relationship
 from db.database import Base
 
@@ -52,15 +52,48 @@ class Connection(Base):
 
     source = relationship("Source", back_populates="connections")
     destination = relationship("Destination", back_populates="connections")
-    properties = relationship("StreamProperty", back_populates="connection")
+    streams = relationship("Stream", back_populates="connection")
+
+
+class Stream(Base):
+    __tablename__ = "streams"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    name = Column(String, index=True)
+    cursor_field_defined_by_source = Column(Boolean, default=False)
+    connection_id = Column(String, ForeignKey("connections.id"))
+
+    connection = relationship("Connection", back_populates="streams")
+    properties = relationship("StreamProperty", back_populates="stream")
+    sync_modes = relationship("StreamSyncMode", back_populates="stream")
+    primary_keys = relationship("StreamPrimaryKey", back_populates="stream")
 
 
 class StreamProperty(Base):
     __tablename__ = "stream_properties"
 
-    id = Column(String, primary_key=True, index=True)
-    connection_id = Column(String, ForeignKey("connections.id"))
-    key = Column(String, index=True)
-    value = Column(String)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    field = Column(String, index=True)
+    stream_id = Column(Integer, ForeignKey("streams.id"))
 
-    connection = relationship("Connection", back_populates="properties")
+    stream = relationship("Stream", back_populates="properties")
+
+
+class StreamSyncMode(Base):
+    __tablename__ = "stream_sync_modes"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    mode = Column(String, index=True)
+    stream_id = Column(Integer, ForeignKey("streams.id"))
+
+    stream = relationship("Stream", back_populates="sync_modes")
+
+
+class StreamPrimaryKey(Base):
+    __tablename__ = "stream_primary_keys"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    field = Column(String, index=True)
+    stream_id = Column(Integer, ForeignKey("streams.id"))
+
+    stream = relationship("Stream", back_populates="primary_keys")

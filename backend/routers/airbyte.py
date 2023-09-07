@@ -136,12 +136,17 @@ async def create_airbyte_connection(
 
 
 @router.post("/stream_properties")
-async def stream_properties():
+async def stream_properties(
+    request: schemas.ConnectionRequest, db: Session = Depends(get_db)
+):
     airbyte_auth = AirbyteAuthService(airbyte_token=airbyte_key)
     response = get_stream_properties(
         airbyte_auth=airbyte_auth,
-        source_id="539bc4c5-dad0-49a2-928b-85025b4c0498",
-        destination_id="967deeca-2fa4-4e87-8711-e116519420f9",
+        source_id=request.source_id,
+        destination_id=request.destination_id,
     )
+
+    if response is None:
+        raise HTTPException(status_code=400, detail="response is None")
 
     return {"response": response}
