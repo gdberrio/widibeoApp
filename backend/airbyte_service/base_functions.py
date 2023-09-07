@@ -73,7 +73,7 @@ def get_google_ads_consent_url(
     req = shared.InitiateOauthRequest(
         name=shared.OAuthActorNames.GOOGLE_ADS,
         o_auth_input_configuration=shared.OAuthInputConfiguration(),
-        redirect_url=f"{base_url}/v1/airbyte/oauth_callback",
+        redirect_url=f"{base_url}/oauth_callback",
         workspace_id=workspace_id,
     )
 
