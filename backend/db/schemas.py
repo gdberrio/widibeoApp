@@ -95,3 +95,12 @@ class S3DestinationRequest(BaseModel):
     aws_access_secret: str
     s3_bucket_name: str = "widibeodatalake"  # Default value if you want
     s3_bucket_path: str = "airbyte"  # Default value if you want
+
+
+class WorkspaceRequest(BaseModel):
+    workspace_id: str
+
+
+class ConnectionRequest(BaseModel):
+    source_id: str
+    destination_id: str
