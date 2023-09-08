@@ -58,14 +58,16 @@ class Connection(Base):
 class Stream(Base):
     __tablename__ = "streams"
 
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    name = Column(String, index=True)
-    cursor_field_defined_by_source = Column(Boolean, default=False)
-    connection_id = Column(String, ForeignKey("connections.id"))
+    id = Column(Integer, primary_key=True, index=True)
+    connection_id = Column(String, ForeignKey("connections.id"), nullable=True)
+    name = Column(String)
+    source_id = Column(String, ForeignKey("sources.id"))
+    destination_id = Column(String, ForeignKey("destinations.id"))
+    cursor_field_defined_by_source = Column(Boolean)
 
-    connection = relationship("Connection", back_populates="streams")
-    properties = relationship("StreamProperty", back_populates="stream")
     sync_modes = relationship("StreamSyncMode", back_populates="stream")
+    properties = relationship("StreamProperty", back_populates="stream")
+    connection = relationship("Connection", back_populates="streams")
     primary_keys = relationship("StreamPrimaryKey", back_populates="stream")
 
 

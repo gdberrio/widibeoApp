@@ -90,9 +90,33 @@ def get_stream_property(db: Session, stream_property_id: str):
     )
 
 
-def create_stream_property(db: Session, stream_property: schemas.StreamPropertyCreate):
-    db_stream_property = models.StreamProperty(**stream_property.model_dump())
-    db.add(db_stream_property)
-    db.commit()
-    db.refresh(db_stream_property)
-    return db_stream_property
+def insert_stream_data(db: Session, source_id: str, destination_id: str, data: list):
+    for item in data:
+        # Insert Stream
+        print("STREAM: addiding stream")
+        stream = models.Stream(
+            name=item["streamName"],
+            cursor_field_defined_by_source=item["sourceDefinedCursorField"],
+            source_id=source_id,
+            destination_id=destination_id,
+        )
+        db.add(stream)
+        db.commit()
+
+        print("STREAM: addiding property")
+        # Insert StreamProperty
+        for prop in item.get("propertyFields", []):
+            db.add(models.StreamProperty(field=prop[0], stream_id=stream.id))
+            db.commit()
+
+        print("STREAM: addiding syncModes")
+        # Insert StreamSyncMode
+        for mode in item.get("syncModes", []):
+            db.add(models.StreamSyncMode(mode=mode, stream_id=stream.id))
+            db.commit()
+
+        print("STREAM: addiding StreamPrimaryKey")
+        # Insert StreamPrimaryKey
+        for key in item.get("sourceDefinedPrimaryKey", []):
+            db.add(models.StreamPrimaryKey(field=key[0], stream_id=stream.id))
+            db.commit()

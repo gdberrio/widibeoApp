@@ -140,13 +140,19 @@ async def stream_properties(
     request: schemas.ConnectionRequest, db: Session = Depends(get_db)
 ):
     airbyte_auth = AirbyteAuthService(airbyte_token=airbyte_key)
+    print("MAIN: getting request from airbyte")
     response = get_stream_properties(
         airbyte_auth=airbyte_auth,
         source_id=request.source_id,
         destination_id=request.destination_id,
     )
 
+    print(80 * "#")
     if response is None:
         raise HTTPException(status_code=400, detail="response is None")
 
-    return {"response": response}
+    print("MAIN: calling stream data:")
+    crud.insert_stream_data(
+        db, request.source_id, request.destination_id, data=response
+    )
+    return {"response": "data added"}

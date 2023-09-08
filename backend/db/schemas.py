@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class UserBase(BaseModel):
@@ -74,22 +75,6 @@ class Connection(ConnectionBase):
 
 
 # Base model for Stream
-class StreamBase(BaseModel):
-    connection_id: str
-    name: str
-    cursor_field_defined_by_source: bool
-
-
-# Models for Stream creation and read
-class StreamCreate(StreamBase):
-    pass
-
-
-class Stream(StreamBase):
-    id: int
-
-    class Config:
-        orm_mode = True
 
 
 # Base model for StreamProperty
@@ -107,7 +92,7 @@ class StreamProperty(StreamPropertyBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Base model for StreamSyncMode
@@ -125,7 +110,7 @@ class StreamSyncMode(StreamSyncModeBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Base model for StreamPrimaryKey
@@ -143,7 +128,26 @@ class StreamPrimaryKey(StreamPrimaryKeyBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+
+class StreamBase(BaseModel):
+    name: str
+    cursor_field_defined_by_source: bool
+    source_id: str
+    destination_id: str
+
+
+class StreamCreate(StreamBase):
+    pass
+
+
+class Stream(StreamBase):
+    id: int
+    connection_id: Optional[str] = None
+
+    class Config:
+        from_attributes = True
 
 
 class S3DestinationRequest(BaseModel):
