@@ -81,6 +81,18 @@ def create_connection(db: Session, connection: schemas.ConnectionCreate):
     return db_connection
 
 
+def get_job(db: Session, job_id: int):
+    return db.query(models.SyncJobs).filter(models.SyncJobs.id == job_id).first()
+
+
+def create_job(db: Session, job: schemas.SyncJobCreate):
+    db_job = models.SyncJobs(**job.model_dump())
+    db.add(db_job)
+    db.commit()
+    db.refresh(db_job)
+    return db_job
+
+
 # StreamProperty CRUD operations
 def get_stream_property(db: Session, stream_property_id: str):
     return (

@@ -74,7 +74,19 @@ class Connection(ConnectionBase):
         from_attributes = True
 
 
-# Base model for Stream
+class SyncJobBase(BaseModel):
+    id: int
+    status: str
+    job_type: str
+
+
+class SyncJobCreate(SyncJobBase):
+    pass
+
+
+class SyncJob(SyncJobBase):
+    class Config:
+        from_attributes = True
 
 
 # Base model for StreamProperty
@@ -165,3 +177,7 @@ class WorkspaceRequest(BaseModel):
 class ConnectionRequest(BaseModel):
     source_id: str
     destination_id: str
+
+
+class SyncRequest(BaseModel):
+    connection_id: str

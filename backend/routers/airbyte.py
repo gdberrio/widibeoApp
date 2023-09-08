@@ -10,6 +10,7 @@ from airbyte_service.base_functions import (
     create_s3_destination,
     create_connection,
     get_stream_properties,
+    sync_connection,
 )
 from db.database import SessionLocal
 from dotenv import load_dotenv
@@ -117,10 +118,16 @@ async def create_airbyte_connection(
         destination_id=request.destination_id,
     )
 
+    print(response)
+
     if response is None:
         raise HTTPException(status_code=400, detail="response is None")
     if response.connection_response is None:
-        raise HTTPException(status_code=400, detail="response is None")
+        raise HTTPException(
+            status_code=400, detail="response does not contain connection_response"
+        )
+
+    print(response)
 
     connection_id = response.connection_response.connection_id
     connection = schemas.ConnectionCreate(
@@ -156,3 +163,31 @@ async def stream_properties(
         db, request.source_id, request.destination_id, data=response
     )
     return {"response": "data added"}
+
+
+@router.post("/sync_connection", response_model=schemas.SyncJob)
+async def sync(request: schemas.SyncRequest, db: Session = Depends(get_db)):
+    airbyte_auth = AirbyteAuthService(airbyte_token=airbyte_key)
+
+    response = sync_connection(
+        airbyte_auth=airbyte_auth, connection_id=request.connection_id
+    )
+
+    if response is None:
+        raise HTTPException(status_code=400, detail="response is None")
+    if response.job_response is None:
+        raise HTTPException(
+            status_code=400, detail="response does not contain connection_response"
+        )
+    job = schemas.SyncJobCreate(
+        id=response.job_response.job_id,
+        status=response.job_response.status,
+        job_type=response.job_response.job_type,
+    )
+
+    db_job = crud.get_job(db, response.job_response.job_id)
+
+    if db_job:
+        raise HTTPException(status_code=400, detail="Job already registered")
+
+    return crud.create_job(db, job)

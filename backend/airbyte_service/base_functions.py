@@ -165,8 +165,25 @@ def create_connection(
     destination_id: str,
 ) -> operations.CreateConnectionResponse:
     req = shared.ConnectionCreateRequest(
-        source_id=source_id, destination_id=destination_id, name="test destination"
+        source_id=source_id,
+        destination_id=destination_id,
+        name="test destination with stream",
+        configurations=shared.StreamConfigurations(
+            streams=[shared.StreamConfiguration(name="campaigns")]
+        ),
     )
 
     res = airbyte_auth.s.connections.create_connection(req)
+    return res
+
+
+def sync_connection(
+    airbyte_auth: AirbyteAuthService, connection_id: str
+) -> operations.CreateJobResponse:
+    req = shared.JobCreateRequest(
+        connection_id=connection_id, job_type=shared.JobTypeEnum.SYNC
+    )
+
+    res = airbyte_auth.s.jobs.create_job(req)
+
     return res

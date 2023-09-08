@@ -99,3 +99,11 @@ class StreamPrimaryKey(Base):
     stream_id = Column(Integer, ForeignKey("streams.id"))
 
     stream = relationship("Stream", back_populates="primary_keys")
+
+
+class SyncJobs(Base):
+    __tablename__ = "sync_jobs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    status = Column(String)
+    job_type = Column(String)
