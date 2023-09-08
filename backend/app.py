@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
 import os
 
-from sqlalchemy.orm import Session
-from db.database import SessionLocal, engine
-from db import models, schemas, crud
+from db.database import engine
+from db import models
 
 from routers import airbyte
 
@@ -20,21 +21,11 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
+templates = Jinja2Templates(directory="templates")
 
 app.include_router(airbyte.router)
 
 
-@app.post("/workspace/", response_model=schemas.Workspace)
-def create_workspace(workspace: schemas.WorkspaceCreate, db: Session = Depends(get_db)):
-    db_workspace = crud.get_workspace(db, workspace_id=workspace.id)
-    if db_workspace:
-        raise HTTPException(status_code=400, detail="Workspace already registered")
-    return crud.create_workspace(db=db, workspace=workspace)
+@app.get("/oauth", response_class=HTMLResponse)
+async def oauth(request: Request):
+    return templates.TemplateResponse("oauth.html", {"request": request})
