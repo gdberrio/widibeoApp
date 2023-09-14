@@ -4,11 +4,10 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 import os
-
 from db.database import engine
 from db import models
 
-from routers import airbyte
+from routers import airbyte, llm
 
 load_dotenv()
 airbyte_key = os.getenv("airbyte_key")
@@ -26,6 +25,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 app.include_router(airbyte.router)
+app.include_router(llm.router)
 
 
 @app.get("/oauth", response_class=HTMLResponse)
