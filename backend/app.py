@@ -31,3 +31,8 @@ app.include_router(llm.router)
 @app.get("/oauth", response_class=HTMLResponse)
 async def oauth(request: Request):
     return templates.TemplateResponse("oauth.html", {"request": request})
+
+
+@app.get("/chat", response_class=HTMLResponse)
+async def chat(request: Request):
+    return templates.TemplateResponse("chat.html", {"request": request})

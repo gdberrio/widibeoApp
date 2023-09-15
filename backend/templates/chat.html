@@ -1,0 +1,24 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Form</title>
+  </head>
+  <body>
+    <form
+      action="https://ede6-149-22-226-32.ngrok-free.app/v1/llm/chat"
+      method="post"
+    >
+      <label for="model">Model:</label>
+      <select id="model" name="model" required>
+        <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+        <option value="gpt-4">gpt-4</option>
+        <option value="gpt-3.5-turbo-16k">gpt-3.5-turbo-16k</option>
+      </select>
+      <label for="message">Message:</label>
+      <input type="text" id="message" name="message" required />
+      <br /><br />
+      <input type="submit" value="Submit" />
+    </form>
+  </body>
+</html>

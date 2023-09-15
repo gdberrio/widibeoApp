@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Form, Response, HTTPException
 from db import schemas, crud
 from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse
-from airbyte_service.base_functions import (
+from airbyte_service.base import (
     AirbyteAuthService,
     get_google_ads_consent_url,
     create_google_ads_source,
@@ -35,7 +35,7 @@ r = redis.Redis(host="localhost", port=6379, db=0)
 router = APIRouter(prefix="/v1/airbyte")
 
 
-@router.post("/s3_destination", response_model=schemas.Destination)
+@router.post("/destinations/s3", response_model=schemas.Destination)
 async def s3_destination(
     request: schemas.S3DestinationRequest, db: Session = Depends(get_db)
 ):
@@ -66,7 +66,7 @@ async def s3_destination(
     return crud.create_destination(db, destination)
 
 
-@router.post("/googleads_oauth")
+@router.post("/sources/googleads_oauth")
 async def googleads_oauth(response: Response, workspace_id: str = Form(...)):
     state = str(uuid4())
     r.setex(state, 600, workspace_id)
@@ -81,7 +81,7 @@ async def googleads_oauth(response: Response, workspace_id: str = Form(...)):
     return RedirectResponse(consent_url)
 
 
-@router.get("/oauth_callback", response_model=schemas.Source)
+@router.get("/sources/oauth_callback", response_model=schemas.Source)
 async def callback(secret_id: str, db: Session = Depends(get_db)):
     # TODO: Once you have user management, you need to get the workspace_id from the session_id, not an env var
     if testing_workspace_id is None:
@@ -107,7 +107,7 @@ async def callback(secret_id: str, db: Session = Depends(get_db)):
     return crud.create_source(db, source)
 
 
-@router.post("/create_connection", response_model=schemas.Connection)
+@router.post("/connections", response_model=schemas.Connection)
 async def create_airbyte_connection(
     request: schemas.ConnectionRequest, db: Session = Depends(get_db)
 ):
@@ -142,7 +142,7 @@ async def create_airbyte_connection(
     return crud.create_connection(db, connection)
 
 
-@router.post("/stream_properties")
+@router.post("/connections/stream_properties")
 async def stream_properties(
     request: schemas.ConnectionRequest, db: Session = Depends(get_db)
 ):
@@ -165,7 +165,7 @@ async def stream_properties(
     return {"response": "data added"}
 
 
-@router.post("/sync_connection", response_model=schemas.SyncJob)
+@router.post("/connections/sync", response_model=schemas.SyncJob)
 async def sync(request: schemas.SyncRequest, db: Session = Depends(get_db)):
     airbyte_auth = AirbyteAuthService(airbyte_token=airbyte_key)
 

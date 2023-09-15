@@ -1,9 +1,14 @@
 import os
 from dotenv import load_dotenv
 import openai
-from stats_copilot.types import ChatModel
+
+from typing import Literal
 
 load_dotenv()
+
+OpenAIModel = Literal["gpt-3.5-turbo"] | Literal["gpt-3.5-turbo-16k"] | Literal["gpt-4"]
+
+ChatModel = OpenAIModel
 
 
 def chat(model: ChatModel, user_message: str):
